@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>بازی حافظه عددی</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main id="app" class="app">
+    <!-- Start menu shown before play -->
+    <section id="start-menu" class="modal modal--open" role="dialog" aria-modal="true" aria-labelledby="start-title">
+      <div class="modal__sheet">
+        <h2 id="start-title" class="modal__title">شروع بازی حافظه عددی</h2>
+        <p class="modal__text">حالت و طول توالی را انتخاب کن یا روی «پیش‌فرض خودکار» بزن تا بازی با سختی خودکار اجرا شود.</p>
+
+        <div class="profile-start">
+          <span class="field__label">دانش‌آموز</span>
+          <div class="profile-start__row">
+            <select id="start-profile-select" class="profile-select" aria-label="انتخاب دانش‌آموز"></select>
+            <button id="start-profile-manage" class="big-btn big-btn--secondary" type="button">کاربران</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field">
+            <span class="field__label">حالت</span>
+            <div class="segmented">
+              <button id="start-mode-forward" class="option is-active">پیش‌رو</button>
+              <button id="start-mode-backward" class="option">معکوس</button>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field__label">طول توالی</span>
+            <div class="length-grid">
+              <button class="length-btn option is-active" data-length="auto">خودکار</button>
+              <button class="length-btn option" data-length="3">۳</button>
+              <button class="length-btn option" data-length="4">۴</button>
+              <button class="length-btn option" data-length="5">۵</button>
+              <button class="length-btn option" data-length="6">۶</button>
+              <button class="length-btn option" data-length="7">۷</button>
+              <button class="length-btn option" data-length="8">۸</button>
+              <button class="length-btn option" data-length="9">۹</button>
+              <button class="length-btn option" data-length="10">۱۰</button>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field__label">فاصله بین اعداد</span>
+            <div class="delay-grid">
+              <button class="delay-btn option is-active" data-delay="500">۰٫۵ ثانیه</button>
+              <button class="delay-btn option" data-delay="1000">۱ ثانیه</button>
+              <button class="delay-btn option" data-delay="2000">۲</button>
+              <button class="delay-btn option" data-delay="3000">۳</button>
+              <button class="delay-btn option" data-delay="4000">۴</button>
+              <button class="delay-btn option" data-delay="5000">۵</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal__actions">
+          <button id="start-confirm" class="big-btn big-btn--primary">شروع بازی</button>
+          <button id="start-skip" class="big-btn big-btn--secondary">لغو</button>
+        </div>
+      </div>
+    </section>
+
+    <header class="topbar">
+      <div class="mode-switch">
+        <button id="mode-forward" class="mode is-active">پیش‌رو</button>
+        <button id="mode-backward" class="mode">معکوس</button>
+      </div>
+      <div class="controls">
+        <button id="tutorial-btn" class="icon-btn" aria-label="راهنما">؟</button>
+        <button id="report-btn" class="icon-btn" aria-label="گزارش">گزارش</button>
+        <button id="home-btn" class="icon-btn" aria-label="خانه">🏠</button>
+        <button id="sound-toggle" class="icon-btn" aria-label="صدا">🔊</button>
+        <button id="reset-btn" class="icon-btn" aria-label="بازنشانی">⟳</button>
+      </div>
+    </header>
+
+    <button id="profile-badge" class="profile-badge" aria-label="تغییر کاربر" type="button">
+      <span class="profile-badge__icon" aria-hidden="true">👤</span>
+      <span class="profile-badge__name" id="profile-badge-name">—</span>
+      <span class="profile-badge__hint">تغییر کاربر</span>
+    </button>
+
+    <section class="status-row">
+      <div class="status">امتیاز: <span id="score">0</span></div>
+      <div class="status">مرحله: <span id="level">2</span></div>
+      <div class="status">ستاره: <span id="stars">★☆☆</span></div>
+    </section>
+
+    <section class="display-area">
+      <div id="message" class="message">آماده‌ای؟ شروع کن!</div>
+      <div id="number-display" class="number-display" aria-live="polite"></div>
+      <div id="timer" class="timer">⏱ ۰</div>
+    </section>
+
+    <section class="pad">
+      <div id="digits" class="digits" role="group" aria-label="کلیدهای اعداد">
+        <!-- buttons 1-9 created by JS -->
+      </div>
+      <div class="actions">
+        <button id="start-btn" class="big-btn big-btn--primary">شروع</button>
+        <button id="submit-btn" class="big-btn" disabled>ارسال</button>
+        <button id="clear-btn" class="big-btn" disabled>پاک</button>
+      </div>
+    </section>
+
+    <!-- Tutorial modal -->
+    <section id="tutorial" class="modal" role="dialog" aria-modal="true" aria-labelledby="tutorial-title" aria-hidden="true">
+      <div class="modal__sheet">
+        <h2 id="tutorial-title" class="modal__title">راهنمای بازی حافظه عددی</h2>
+        <p class="modal__text">در هر دور تعدادی عدد (۲ یا بیشتر) یکی‌یکی نشان داده می‌شوند. باید آن‌ها را یاد و سپس با کلیدها وارد کنی.</p>
+        <ul class="tutorial-list">
+          <li>حالت «پیش‌رو»: اعداد را همان ترتیب نشان‌داده شده وارد کن.</li>
+          <li>حالت «معکوس»: اعداد را برعکس وارد کن.</li>
+          <li>با جواب درست طول توالی افزایش می‌یابد؛ با اشتباه تکرار یا کاهش می‌شود.</li>
+        </ul>
+        <div class="modal__actions">
+          <button id="close-tut" class="big-btn big-btn--primary">باشه، فهمیدم</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Report modal -->
+    <section id="report-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="report-title" aria-hidden="true">
+      <div class="modal__sheet">
+        <h2 id="report-title" class="modal__title">گزارش زنده بازی</h2>
+        <div class="report-student" id="report-student">دانش‌آموز: —</div>
+        <div class="report-stats">
+          <div class="report-stat">امتیاز کل: <span id="report-score">0</span></div>
+          <div class="report-stat">بیشترین مرحله: <span id="report-maxlevel">2</span></div>
+          <div class="report-stat">درستی‌ها: <span id="report-correct">0</span></div>
+          <div class="report-stat">اشتباه‌ها: <span id="report-wrong">0</span></div>
+        </div>
+        <div class="report-wrong">
+          <span class="report-wrong__title">پاسخ‌های نادرست:</span>
+          <div id="report-list" class="report-wrong__list">هنوز مورد نادرستی ثبت نشده.</div>
+        </div>
+        <div class="modal__actions">
+          <button id="export-csv" class="big-btn big-btn--secondary">دانلود CSV</button>
+          <button id="close-report" class="big-btn big-btn--primary">بستن</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile management modal -->
+    <section id="profile-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="profile-title" aria-hidden="true">
+      <div class="modal__sheet">
+        <h2 id="profile-title" class="modal__title">مدیریت کاربران</h2>
+        <div class="profile-create">
+          <input id="profile-name-input" class="profile-input" type="text" placeholder="نام دانش‌آموز جدید..." maxlength="20" autocomplete="off" />
+          <button id="profile-add" class="big-btn big-btn--primary" type="button">افزودن پروفایل</button>
+        </div>
+        <div id="profile-list" class="profile-list" aria-live="polite"></div>
+        <div class="modal__actions">
+          <button id="close-profile" class="big-btn big-btn--secondary">بستن</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="celebrate" class="celebrate" aria-hidden="true">آفرین! ادامه بده! 🎉</div>
+
+    <footer class="footer">
+      <small>کاری از علی قلی پور گودرزی</small>
+    </footer>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
